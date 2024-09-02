@@ -1,5 +1,26 @@
-# Vue 3 + Vite
+# Todo Task app
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+<div style="display:flex">
+<img align="center" alt="vuejs" src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D" />
+</div>
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## 💻 The project 
+   an application for you to manage your daily tasks.
+  
+  ![image](https://github.com/user-attachments/assets/8a3d99e4-8d44-4e96-9eb7-7fc5f3f1f4fe)
+
+
+
+
+## 🚀 Technologies
+* Vue
+* Vue Form
+* Composition API
+
+## 🔧 installation
+```
+npm install
+npm run dev
+```
+
+<p> 👷 We are working on new features! </p> 
