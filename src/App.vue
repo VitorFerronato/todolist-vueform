@@ -1,9 +1,8 @@
-
-
 <template>
   <div class="page">
     <div class="container">
-      <h1>The task list</h1>
+      <h1>Tasks app</h1>
+
       <Vueform size="lg" :endpoint="createTask">
         <TextElement
           name="task"
@@ -19,9 +18,91 @@
           default="Personal"
         />
 
-        <ButtonElement name="button" align="right" submits >
-          Create
+        <ButtonElement name="button" align="right" submits>
+          Submit
         </ButtonElement>
+      </Vueform>
+
+      <hr class="divider" />
+
+      <Vueform v-model="tasksModel" sync>
+        <ListElement
+          name="tasks"
+          :controls="{
+            add: false,
+          }"
+          :add-class="{
+            handle: 'task-sort-handle',
+          }"
+          sort
+          @sort="syncToStorage"
+          @remove="syncToStorage"
+        >
+          <template #default="{ index }">
+            <ObjectElement
+              :name="index"
+              :add-class="[
+                'task-container',
+                tasksModel.tasks[index].type === 'Personal'
+                  ? 'is-personal'
+                  : 'is-business',
+              ]"
+            >
+              <ButtonElement
+                :label="`#${index + 1} - ${tasksModel.tasks[index].task}`"
+                name="edit"
+                align="right"
+                :conditions="[['editing', '!=', index]]"
+                :columns="{
+                  label: 8,
+                }"
+                @click="edit(index)"
+              >
+                Edit
+              </ButtonElement>
+
+              <TextElement
+                name="task"
+                :conditions="[['editing', index]]"
+                :columns="6"
+              />
+
+              <RadiogroupElement
+                name="type"
+                view="tabs"
+                :conditions="[['editing', index]]"
+                :columns="2"
+                :items="{
+                  Personal: 'P',
+                  Business: 'B',
+                }"
+              />
+
+              <ButtonElement
+                name="cancel"
+                :conditions="[['editing', index]]"
+                :columns="2"
+                danger
+                full
+                @click="cancel"
+              >
+                Cancel
+              </ButtonElement>
+
+              <ButtonElement
+                name="save"
+                :conditions="[['editing', index]]"
+                :columns="2"
+                full
+                @click="save"
+              >
+                Save
+              </ButtonElement>
+            </ObjectElement>
+          </template>
+        </ListElement>
+
+        <HiddenElement name="editing" />
       </Vueform>
     </div>
   </div>
@@ -30,7 +111,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const taskModel = ref({
+const tasksModel = ref({
   tasks: [],
   editing: null,
 });
@@ -53,27 +134,27 @@ const addToStorage = (data) => {
 const syncFromStorage = () => {
   let tasks = localStorage.getItem("tasks");
 
-  taskModel.value = {
-    tasks: tasks ? JSON.stringify(tasks) : [],
+  tasksModel.value = {
+    tasks: tasks ? JSON.parse(tasks) : [],
   };
 };
 
 const syncToStorage = () => {
-  localStorage.setItem("tasks", JSON.stringify(taskModel.value.tasks));
+  localStorage.setItem("tasks", JSON.stringify(tasksModel.value.tasks));
 };
 
 const edit = (index) => {
-  taskModel.value.editing = index;
+  tasksModel.value.editing = index;
 };
 
 const cancel = (index) => {
-  taskModel.value.editing = null;
+  tasksModel.value.editing = null;
   syncFromStorage();
 };
 
 const save = () => {
   syncToStorage();
-  taskModel.value.editing = null;
+  tasksModel.value.editing = null;
 };
 
 onMounted(() => {
