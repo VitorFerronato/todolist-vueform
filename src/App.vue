@@ -1,30 +1,129 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
+
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="page">
+    <div class="container">
+      <h1>The task list</h1>
+      <Vueform size="lg" :endpoint="createTask">
+        <TextElement
+          name="task"
+          placeholder="Add a task"
+          floating="Task name"
+          rules="required"
+        />
+
+        <RadiogroupElement
+          name="type"
+          :items="['Personal', 'Business']"
+          view="tabs"
+          default="Personal"
+        />
+
+        <ButtonElement name="button" align="right" submits >
+          Create
+        </ButtonElement>
+      </Vueform>
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script setup>
+import { onMounted, ref } from "vue";
+
+const taskModel = ref({
+  tasks: [],
+  editing: null,
+});
+
+const createTask = (data, form$) => {
+  addToStorage(form$.data);
+  syncFromStorage();
+
+  form$.reset();
+};
+
+const addToStorage = (data) => {
+  let storageData = localStorage.getItem("tasks");
+  storageData = storageData ? JSON.parse(storageData) : [];
+
+  storageData.push(data);
+  localStorage.setItem("tasks", JSON.stringify(storageData));
+};
+
+const syncFromStorage = () => {
+  let tasks = localStorage.getItem("tasks");
+
+  taskModel.value = {
+    tasks: tasks ? JSON.stringify(tasks) : [],
+  };
+};
+
+const syncToStorage = () => {
+  localStorage.setItem("tasks", JSON.stringify(taskModel.value.tasks));
+};
+
+const edit = (index) => {
+  taskModel.value.editing = index;
+};
+
+const cancel = (index) => {
+  taskModel.value.editing = null;
+  syncFromStorage();
+};
+
+const save = () => {
+  syncToStorage();
+  taskModel.value.editing = null;
+};
+
+onMounted(() => {
+  syncFromStorage();
+});
+</script>
+
+<style lang="scss">
+.page {
+  background: #f1f5f9;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 2rem;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+h1 {
+  font-size: 48px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.divider {
+  margin: 2rem 0;
+  border-color: #e2e8f0;
+}
+
+.task-container {
+  background: #ffffff;
+  padding: 1rem;
+
+  &.is-personal {
+    border-left: 3px solid green;
+  }
+
+  &.is-business {
+    border-left: 3px solid purple;
+  }
+}
+
+.task-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.vf-list-handle.task-sort-handle {
+  top: 1rem;
 }
 </style>

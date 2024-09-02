@@ -1,13 +1,10 @@
-// vueform.config.(js|ts)
-
 import en from '@vueform/vueform/locales/en'
-import vueform from '@vueform/vueform/dist/vueform'
-import { defineConfig } from '@vueform/vueform'
+import vueform from '@vueform/vueform/themes/vueform'
 
-import '@vueform/vueform/dist/vueform.css';
+import '@vueform/vueform/themes/vueform/css/index.min.css';
 
-export default defineConfig({
+export default {
   theme: vueform,
   locales: { en },
   locale: 'en',
-})
+}
